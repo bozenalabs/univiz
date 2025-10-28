@@ -1,24 +1,52 @@
 use unicode_segmentation::UnicodeSegmentation; // for the trait
 use unicode_width::UnicodeWidthChar;
+use unicode_width::UnicodeWidthStr;
 
 fn main() {
 
+    let s = std::env::args().nth(1).unwrap_or_else(|| "aé😀👩‍💻".to_string());
 
-    let s = "😀a👩‍💻";
-    for (i, c) in s.char_indices() {
-        println!("code point '{}' starts at byte index {}", c, i);
+
+    for (gi, g) in s.grapheme_indices(true) {
+        print !("grapheme: '{}' (width {}) starts at byte index {}\n", g, g.width(), gi);
+        for (ci, c) in g.char_indices() {
+            print !("  code point: '{}' (width {}) starts at byte index {}\n", c, c.width().unwrap_or(0), ci);
+            
+            let mut buffer = [0; 4];
+            let bytes = c.encode_utf8(&mut buffer).as_bytes();
+            for (bi, b) in bytes.iter().enumerate() {
+                let binary = format!("{:#b}", b);
+                let prefix_to_color = match bi {
+                    0 => match bytes.len() {
+                        1 => 3,
+                        2 => 5,
+                        3 => 6,
+                        4 => 7,
+                        _ => 0,
+                    }
+                    _ => 4
+                };
+
+                // ANSI escape codes
+                let red = "\x1b[31m";   // Red foreground
+                let reset = "\x1b[0m";  // Reset to default
+
+                // Split string at char boundaries
+                let colored: String = binary
+                    .chars()
+                    .enumerate()
+                    .map(|(i, c)| {
+                        if i < prefix_to_color {
+                            format!("{}{}{}", red, c, reset)
+                        } else {
+                            c.to_string()
+                        }
+                    })
+                    .collect();
+
+                
+                print!("    utf8 byte: {:X} {}\n", b, colored);
+            }
+        }
     }
-
-    for (i, c) in s.grapheme_indices(true) {
-        println!("grapheme '{}' starts at byte index {}", c, i);
-    }
-
-    for c in ['😀', 'a', '👩', '‍', '\u{0301}', '💻'] {
-        println!(
-            "The character {} has a width of {}",
-            c,
-            c.width().unwrap_or(0)
-        );
-    }
-
 }
