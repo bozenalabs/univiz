@@ -6,11 +6,12 @@ fn main() {
 
     let s = std::env::args().nth(1).unwrap_or_else(|| "aé😀👩‍💻".to_string());
 
-
+    print!("Analyzing string: '{}' width={} bytes={}\n", s, s.width(), s.len());
+    let mut total_byte_idx = 0;
     for (gi, g) in s.grapheme_indices(true) {
-        print !("grapheme: '{}' (width {}) starts at byte index {}\n", g, g.width(), gi);
+        print !("grapheme='{}' width={} bytes={} byte_idx={}\n", g, g.width(), g.len(), gi);
         for (ci, c) in g.char_indices() {
-            print !("  code point: '{}' (width {}) starts at byte index {}\n", c, c.width().unwrap_or(0), ci);
+            print !("  code point='{}' (U+{:X}) width={} byte_idx={} byte_idx_global={}\n", c, c as u32, c.width().unwrap_or(0), ci, total_byte_idx + ci);
             
             let mut buffer = [0; 4];
             let bytes = c.encode_utf8(&mut buffer).as_bytes();
@@ -46,7 +47,9 @@ fn main() {
 
                 
                 print!("    utf8 byte: {:X} {}\n", b, colored);
+                assert_eq!(s.as_bytes()[total_byte_idx +  ci + bi], *b);
             }
         }
+        total_byte_idx += g.len();
     }
 }
