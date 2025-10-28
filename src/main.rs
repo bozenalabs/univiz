@@ -1,9 +1,8 @@
-use unicode_segmentation::UnicodeSegmentation; // for the trait
+use unicode_segmentation::UnicodeSegmentation;
 use unicode_width::UnicodeWidthChar;
 use unicode_width::UnicodeWidthStr;
 
 fn main() {
-
     let s = std::env::args().nth(1).unwrap_or_else(|| "aé😀👩‍💻".to_string());
 
     print!("Analyzing string: '{}' width={} bytes={}\n", s, s.width(), s.len());
