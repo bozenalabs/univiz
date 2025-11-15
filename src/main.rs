@@ -2,6 +2,7 @@ use colored::*;
 use unicode_segmentation::UnicodeSegmentation;
 use unicode_width::UnicodeWidthChar;
 use unicode_width::UnicodeWidthStr;
+use unicode_names2::name;
 
 fn main() {
     let s = std::env::args()
@@ -24,10 +25,13 @@ fn main() {
             format!("byte_idx={}", gi).dimmed()
         );
         for (ci, c) in g.char_indices() {
+
+            let char_name = name(c).map(|n| n.to_string()).unwrap_or("<unknown>".to_string());
             println!(
-                "  code point='{}' (U+{:X}) {} {} {}",
+                "  code point='{}' (U+{:X}) ({}) {} {} {}",
                 c,
                 c as u32,
+                char_name,
                 format!("width={}", c.width().unwrap_or(0)).dimmed(),
                 format!("byte_idx={}", ci).dimmed(),
                 format!("byte_idx_global={}", total_byte_idx + ci).dimmed()

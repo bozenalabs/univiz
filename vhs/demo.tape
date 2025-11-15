@@ -3,15 +3,16 @@
 # Settings
 Output univiz-demo.gif
 Set FontSize 16
-# Set FontFamily "JetBrains Mono"
 Set Width 1200
 Set Height 800
 Set Theme "Dracula"
 Set Padding 40
 Set TypingSpeed 50ms
 
+Require univiz
+
 # Demo
-Type "# Univiz - Unicode String Analyzer"
+Type "# Univiz - utf8 string analyzer"
 Enter
 Sleep 1s
 
