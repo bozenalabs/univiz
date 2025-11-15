@@ -1,17 +1,38 @@
+use colored::*;
 use unicode_segmentation::UnicodeSegmentation;
 use unicode_width::UnicodeWidthChar;
 use unicode_width::UnicodeWidthStr;
 
 fn main() {
-    let s = std::env::args().nth(1).unwrap_or_else(|| "aé😀👩‍💻".to_string());
+    let s = std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| "aé😀👩‍💻".to_string());
 
-    print!("Analyzing string: '{}' width={} bytes={}\n", s, s.width(), s.len());
+    println!(
+        "Analyzing string: '{}' {} {}",
+        s,
+        format!("width={}", s.width()).dimmed(),
+        format!("bytes={}", s.len()).dimmed()
+    );
     let mut total_byte_idx = 0;
     for (gi, g) in s.grapheme_indices(true) {
-        print !("grapheme='{}' width={} bytes={} byte_idx={}\n", g, g.width(), g.len(), gi);
+        println!(
+            "grapheme='{}' {} {} {}",
+            g,
+            format!("width={}", g.width()).dimmed(),
+            format!("bytes={}", g.len()).dimmed(),
+            format!("byte_idx={}", gi).dimmed()
+        );
         for (ci, c) in g.char_indices() {
-            print !("  code point='{}' (U+{:X}) width={} byte_idx={} byte_idx_global={}\n", c, c as u32, c.width().unwrap_or(0), ci, total_byte_idx + ci);
-            
+            println!(
+                "  code point='{}' (U+{:X}) {} {} {}",
+                c,
+                c as u32,
+                format!("width={}", c.width().unwrap_or(0)).dimmed(),
+                format!("byte_idx={}", ci).dimmed(),
+                format!("byte_idx_global={}", total_byte_idx + ci).dimmed()
+            );
+
             let mut buffer = [0; 4];
             let bytes = c.encode_utf8(&mut buffer).as_bytes();
             for (bi, b) in bytes.iter().enumerate() {
@@ -23,13 +44,9 @@ fn main() {
                         3 => 6,
                         4 => 7,
                         _ => 0,
-                    }
-                    _ => 4
+                    },
+                    _ => 4,
                 };
-
-                // ANSI escape codes
-                let red = "\x1b[31m";   // Red foreground
-                let reset = "\x1b[0m";  // Reset to default
 
                 // Split string at char boundaries
                 let colored: String = binary
@@ -37,16 +54,16 @@ fn main() {
                     .enumerate()
                     .map(|(i, c)| {
                         if i < prefix_to_color {
-                            format!("{}{}{}", red, c, reset)
+                            c.to_string().red().to_string()
                         } else {
                             c.to_string()
                         }
                     })
                     .collect();
 
-                
-                print!("    utf8 byte: {:X} {}\n", b, colored);
-                assert_eq!(s.as_bytes()[total_byte_idx +  ci + bi], *b);
+                let idx_string = format!("({})", bi).dimmed();
+                println!("    utf8 byte {}: {:X} {}", idx_string, *b, colored);
+                assert_eq!(s.as_bytes()[total_byte_idx + ci + bi], *b);
             }
         }
         total_byte_idx += g.len();
