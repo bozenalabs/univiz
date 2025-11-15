@@ -2,6 +2,13 @@
 name = "univiz"
 version = "0.1.1"
 edition = "2024"
+license = "MIT"
+description = "A command-line tool for analyzing Unicode strings, providing detailed information about graphemes, code points, and UTF-8 byte sequences"
+repository = "https://github.com/bozenalabs/univiz"
+homepage = "https://github.com/bozenalabs/univiz"
+keywords = ["unicode", "grapheme", "utf8", "analysis", "cli"]
+categories = ["command-line-utilities", "text-processing"]
+authors = ["Bozena Labs"]
 
 [dependencies]
 unicode-segmentation = "1.12.0"
