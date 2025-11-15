@@ -1,13 +1,29 @@
+use clap::Parser;
 use colored::*;
 use unicode_segmentation::UnicodeSegmentation;
 use unicode_width::UnicodeWidthChar;
 use unicode_width::UnicodeWidthStr;
 use unicode_names2::name;
 
+/// A command-line tool for analyzing Unicode strings, providing detailed information 
+/// about graphemes, code points, and UTF-8 byte sequences.
+#[derive(Parser)]
+#[command(name = "univiz")]
+#[command(about = "Unicode string analyzer - visualize graphemes, code points, and UTF-8 encoding")]
+#[command(long_about = "Univiz analyzes Unicode strings and provides detailed information about:
+- Grapheme cluster analysis with display width
+- Code point information with Unicode values and names  
+- UTF-8 byte sequence breakdown with binary representation
+- Detailed byte indexing (local and global)")]
+#[command(version)]
+struct Cli {
+    /// The string to analyze (default: 'aé😀👩‍💻')
+    text: Option<String>,
+}
+
 fn main() {
-    let s = std::env::args()
-        .nth(1)
-        .unwrap_or_else(|| "aé😀👩‍💻".to_string());
+    let cli = Cli::parse();
+    let s = cli.text.unwrap_or_else(|| "aé😀👩‍💻".to_string());
 
     println!(
         "Analyzing string: '{}' {} {}",
